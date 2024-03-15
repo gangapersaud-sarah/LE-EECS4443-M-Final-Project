@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Drink List Game</string>
+    <dimen name="image_width">100dp</dimen>
+    <dimen name="image_height">100dp</dimen>
+    <dimen name="corner_radius">16dp</dimen>
+    <dimen name="card_margin_top">16dp</dimen>
+    <dimen name="card_margin_bottom">16dp</dimen>
+</resources>
