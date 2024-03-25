@@ -118,12 +118,17 @@ public class MainActivity extends AppCompatActivity {
     private void displaySelectedImages(int leftIndex, int rightIndex){
         LinearLayout leftContainer = findViewById(R.id.leftContainer);
         ArrayList<ImageInfo> arrlistofOptions1 = new ArrayList<ImageInfo>(leftImages.subList(0,leftIndex));
+        shuffleImages(arrlistofOptions1);
         addImagesToContainer(leftContainer, arrlistofOptions1, true);
 
         LinearLayout rightContainer = findViewById(R.id.rightContainer);
         ArrayList<ImageInfo> arrlistofOptions2 = new ArrayList<ImageInfo>(rightImages.subList(0,rightIndex));
+        shuffleImages(arrlistofOptions2);
         addImagesToContainer(rightContainer, arrlistofOptions2, false);
         rightImageNum = arrlistofOptions2.size();
+    }
+    private int randomIntFromInterval(int min, int max) { // min and max included
+        return (int)(Math.floor(Math.random() * (max - min + 1) + min));
     }
 
     private void addImagesToContainer(LinearLayout container, ArrayList<ImageInfo> imagesList, boolean isLeft) {
