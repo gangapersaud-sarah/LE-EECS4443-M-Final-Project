@@ -1,6 +1,8 @@
 package com.example.drinklistgame;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] rightImageIds;
 
     int randomNumber;
+    int rightImageNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +56,21 @@ public class MainActivity extends AppCompatActivity {
         initializeImages(leftImages, leftImageIds);
         initializeImages(rightImages, rightImageIds);
 
-        shuffleImages(leftImages);
-        shuffleImages(rightImages);
+        //shuffleImages(leftImages);
+        //shuffleImages(rightImages);
+        //changes
+        rightImageNum = leftImageIds.length;
 
-        displayImages();
+        int m2m = (int)(Math.random()*4+1);
+
+        if(Math.random()>=0.5){
+            displaySelectedImages(m2m, m2m);
+        }
+        else{
+            displaySelectedImages(1,1);
+        }
+        //old
+        //displayImages();
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 tv_ErrorRate.setText("");
                 tv_TrueResult.setText(String.valueOf(0));
                 tv_FalseResult.setText(String.valueOf(0));
-                shuffleImages(leftImages);
-                shuffleImages(rightImages);
+                //shuffleImages(leftImages);
+                //shuffleImages(rightImages);
                 displayImages();
             }
         });
@@ -100,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout rightContainer = findViewById(R.id.rightContainer);
         addImagesToContainer(rightContainer, rightImages, false);
+    }
+    private void displaySelectedImages(int leftIndex, int rightIndex){
+        LinearLayout leftContainer = findViewById(R.id.leftContainer);
+        ArrayList<ImageInfo> arrlistofOptions1 = new ArrayList<ImageInfo>(leftImages.subList(0,leftIndex));
+        addImagesToContainer(leftContainer, arrlistofOptions1, true);
+
+        LinearLayout rightContainer = findViewById(R.id.rightContainer);
+        ArrayList<ImageInfo> arrlistofOptions2 = new ArrayList<ImageInfo>(rightImages.subList(0,rightIndex));
+        addImagesToContainer(rightContainer, arrlistofOptions2, false);
+        rightImageNum = arrlistofOptions2.size();
     }
 
     private void addImagesToContainer(LinearLayout container, ArrayList<ImageInfo> imagesList, boolean isLeft) {
@@ -157,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                             selectedLeftImageId = droppedImageId;
                             selectedRightImageId = imageInfo.getImageId();
                             checkSelectedImages();
+                            Log.i("event", "onDrag pressed");
 
                             if (timerRunning) {
                                 long endTime = System.currentTimeMillis();
@@ -201,6 +226,12 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 falseCount++;
                 tv_FalseResult.setText(String.valueOf(falseCount));
+            }
+            Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum);
+            if(trueCount >= rightImageNum){
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
             }
 
             selectedLeftImageId = -1;
