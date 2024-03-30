@@ -3,6 +3,7 @@ package com.example.drinklistgame;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,10 +35,21 @@ public class MainActivity extends AppCompatActivity {
 
     int randomNumber;
 
+    private int currentCardinality = 0;
+    private Button nextButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        nextButton = findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                transitionToNextCardinality();
+            }
+        });
 
         ImageView refresh = findViewById(R.id.refresh);
         tv_TrueResult = findViewById(R.id.tv_TrueResult);
@@ -96,11 +108,51 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayImages() {
         LinearLayout leftContainer = findViewById(R.id.leftContainer);
-        addImagesToContainer(leftContainer, leftImages, true);
-
         LinearLayout rightContainer = findViewById(R.id.rightContainer);
-        addImagesToContainer(rightContainer, rightImages, false);
+
+        leftContainer.removeAllViews();
+        rightContainer.removeAllViews();
+
+        if (currentCardinality == 0) { // Many-to-Many
+            addImagesToContainer(leftContainer, leftImages, true);
+            addImagesToContainer(rightContainer, rightImages, false);
+        } else if (currentCardinality == 1) { // One-to-Many
+            addImagesToContainer(leftContainer, new ArrayList<>(leftImages.subList(0, 1)), true);
+            addImagesToContainer(rightContainer, rightImages, false);
+        } else if (currentCardinality == 2) { // Many-to-One
+            addImagesToContainer(leftContainer, leftImages, true);
+            addImagesToContainer(rightContainer, new ArrayList<>(rightImages.subList(0, 1)), false);
+        }else if (currentCardinality == 3) { // One-to-One
+            Random random = new Random();
+            int leftIndex = random.nextInt(leftImages.size());
+            int rightIndex = random.nextInt(rightImages.size());
+            addImagesToContainer(leftContainer, new ArrayList<>(Collections.singletonList(leftImages.get(leftIndex))), true);
+            addImagesToContainer(rightContainer, new ArrayList<>(Collections.singletonList(rightImages.get(rightIndex))), false);
+        }
     }
+
+    private void transitionToNextCardinality() {
+        currentCardinality = (currentCardinality + 1) % 4;
+        displayImages();
+        if (currentCardinality != 0) {
+            refreshRightImages();
+        }
+    }
+
+    private void refreshRightImages() {
+        Random random = new Random();
+        randomNumber = random.nextInt(12);
+        getDrinkList(randomNumber);
+
+        rightImages.clear();
+        for (int i = 0; i < rightImageIds.length; i++) {
+            rightImages.add(new ImageInfo(BASE_ID + i, rightImageIds[i]));
+        }
+
+        shuffleImages(rightImages);
+        displayImages();
+    }
+
 
     private void addImagesToContainer(LinearLayout container, ArrayList<ImageInfo> imagesList, boolean isLeft) {
         container.removeAllViews();

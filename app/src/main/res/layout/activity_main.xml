@@ -44,9 +44,9 @@
 
         <TextView
             android:id="@+id/tv_TrueResult"
-            android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:text="0"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -55,9 +55,9 @@
 
         <TextView
             android:id="@+id/tv_FalseResult"
-            android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:text="0"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView2"
@@ -90,6 +90,16 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+    <!-- Add this Button at an appropriate location within your layout -->
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="34dp"
+        android:text="Next"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
 
     <!-- Left container -->
 
