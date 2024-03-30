@@ -36,18 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
     int randomNumber;
     int rightImageNum;
+    int leftImageNum;
+    int[] one2MSelected = {0,0,0,0};
+    boolean isOneToMany;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ImageView refresh = findViewById(R.id.refresh);
-        tv_TrueResult = findViewById(R.id.tv_TrueResult);
-        tv_FalseResult = findViewById(R.id.tv_FalseResult);
-        trialCompletion = findViewById(R.id.tv_TrialCompletion);
-        tv_ErrorRate = findViewById(R.id.tv_ErrorRate);
-
+    private void randomAndDisplayImg(){
         Random random = new Random();
         randomNumber = random.nextInt(12);
 
@@ -62,39 +55,65 @@ public class MainActivity extends AppCompatActivity {
         rightImageNum = leftImageIds.length;
 
         int m2m = (int)(Math.random()*4+1);
-
-        if(Math.random()>=0.5){
+        double swCon = Math.random();
+        if(swCon<=0.25){
             displaySelectedImages(m2m, m2m);
+        }
+        else if(swCon<=0.5){
+            display12M(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
+        }
+        else if(swCon<=0.75){
+            displayM21(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
         }
         else{
             displaySelectedImages(1,1);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ImageView refresh = findViewById(R.id.refresh);
+        tv_TrueResult = findViewById(R.id.tv_TrueResult);
+        tv_FalseResult = findViewById(R.id.tv_FalseResult);
+        trialCompletion = findViewById(R.id.tv_TrialCompletion);
+        tv_ErrorRate = findViewById(R.id.tv_ErrorRate);
+        isOneToMany = false;
+
+        randomAndDisplayImg();
         //old
         //displayImages();
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                randomNumber = random.nextInt(12);
-                getDrinkList(randomNumber);
-
-                rightImages.clear();
-                for (int i = 0; i < rightImageIds.length; i++) {
-                    rightImages.add(new ImageInfo(BASE_ID + i, rightImageIds[i]));
-                }
-
-                trueCount = 0;
-                falseCount = 0;
-                trialTimes.clear();
-                trialCompletion.setText("");
-                tv_ErrorRate.setText("");
-                tv_TrueResult.setText(String.valueOf(0));
-                tv_FalseResult.setText(String.valueOf(0));
-                //shuffleImages(leftImages);
-                //shuffleImages(rightImages);
-                displayImages();
+                refresh();
             }
         });
+    }
+    private void refresh(){
+        Random random = new Random();
+        randomNumber = random.nextInt(12);
+        getDrinkList(randomNumber);
+
+        rightImages.clear();
+        for (int i = 0; i < rightImageIds.length; i++) {
+            rightImages.add(new ImageInfo(BASE_ID + i, rightImageIds[i]));
+        }
+
+        trueCount = 0;
+        falseCount = 0;
+        trialTimes.clear();
+        trialCompletion.setText("");
+        tv_ErrorRate.setText("");
+        tv_TrueResult.setText(String.valueOf(0));
+        tv_FalseResult.setText(String.valueOf(0));
+        //shuffleImages(leftImages);
+        //shuffleImages(rightImages);
+
+        randomAndDisplayImg();
     }
 
     private void initializeImages(ArrayList<ImageInfo> imagesList, int[] imageIds) {
@@ -126,6 +145,46 @@ public class MainActivity extends AppCompatActivity {
         shuffleImages(arrlistofOptions2);
         addImagesToContainer(rightContainer, arrlistofOptions2, false);
         rightImageNum = arrlistofOptions2.size();
+        leftImageNum = arrlistofOptions1.size();
+    }
+    private void display12M(int leftElementIndex, int occurrences){
+        LinearLayout leftContainer = findViewById(R.id.leftContainer);
+        LinearLayout rightContainer = findViewById(R.id.rightContainer);
+        //initialize 1 side (right)
+        ArrayList<ImageInfo> arrlistofOptions1 = new ArrayList<ImageInfo>();
+        ArrayList<ImageInfo> arrlistofOptions2 = new ArrayList<ImageInfo>();
+        arrlistofOptions1.add(leftImages.get(leftElementIndex));
+        //add occurrences number of images to left
+        for (int k = occurrences; k>0; k--){
+            getDrinkList(randomIntFromInterval(0,11));
+            //initializeImages(rightImages, rightImageIds);
+            arrlistofOptions2.add(new ImageInfo(BASE_ID + k, rightImageIds[leftElementIndex]));
+        }
+        shuffleImages(arrlistofOptions2);
+        addImagesToContainer(leftContainer, arrlistofOptions1, true);
+        addImagesToContainer(rightContainer, arrlistofOptions2, false);
+        leftImageNum = arrlistofOptions1.size();
+        rightImageNum = arrlistofOptions2.size();
+        isOneToMany = true;
+
+    }
+    private void displayM21(int leftElementIndex, int occurrences){
+        LinearLayout leftContainer = findViewById(R.id.leftContainer);
+        LinearLayout rightContainer = findViewById(R.id.rightContainer);
+        //initialize 1 side (right)
+        ArrayList<ImageInfo> arrlistofOptions1 = new ArrayList<ImageInfo>();
+        ArrayList<ImageInfo> arrlistofOptions2 = new ArrayList<ImageInfo>();
+        arrlistofOptions2.add(rightImages.get(leftElementIndex));
+        //add occurrences number of images to left
+        for (int k = occurrences; k>0; k--){
+            arrlistofOptions1.add(leftImages.get(leftElementIndex));
+        }
+        shuffleImages(arrlistofOptions2);
+        addImagesToContainer(leftContainer, arrlistofOptions1, true);
+        addImagesToContainer(rightContainer, arrlistofOptions2, false);
+
+        rightImageNum = arrlistofOptions1.size();
+        leftImageNum = arrlistofOptions2.size();
     }
     private int randomIntFromInterval(int min, int max) { // min and max included
         return (int)(Math.floor(Math.random() * (max - min + 1) + min));
@@ -223,7 +282,34 @@ public class MainActivity extends AppCompatActivity {
         double errorRate = (double) result.getErrorCount() / trialTimes.size() * 100;
         return new TrialSummary(completionTimeSec, errorRate);
     }
+    private boolean checkMany(int count){
+        int sum = 0;
+        for(int i = 0; i<one2MSelected.length; i++){
+            if(one2MSelected[i] == 1)
+                sum++;
+        }
+        if(sum == count){
+            one2MSelected = new int[]{0, 0, 0, 0};
+            isOneToMany = false;
+            return true;
+        }
+        return false;
+    }
     private void checkSelectedImages() {
+        if(isOneToMany){
+            if(selectedRightImageId != -1) {
+                one2MSelected[selectedRightImageId-2] = 1;
+                trueCount++;
+                tv_TrueResult.setText(String.valueOf(trueCount));
+                if(checkMany(rightImageNum)){
+                    refresh();
+                }
+            }
+            selectedLeftImageId = -1;
+            selectedRightImageId = -1;
+            return;
+        }
+
         if (selectedLeftImageId != -1 && selectedRightImageId != -1) {
             if (selectedLeftImageId == selectedRightImageId) {
                 trueCount++;
@@ -233,10 +319,12 @@ public class MainActivity extends AppCompatActivity {
                 tv_FalseResult.setText(String.valueOf(falseCount));
             }
             Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum);
-            if(trueCount >= rightImageNum){
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
+            if(trueCount >= rightImageNum && trueCount >= leftImageNum){
+                //old way to reload, performance testing method
+//                Intent intent = getIntent();
+//                finish();
+//                startActivity(intent);
+                refresh();
             }
 
             selectedLeftImageId = -1;
