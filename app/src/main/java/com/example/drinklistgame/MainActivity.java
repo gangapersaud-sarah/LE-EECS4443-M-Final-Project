@@ -1,5 +1,7 @@
 package com.example.drinklistgame;
 
+import static java.security.AccessController.getContext;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,11 +41,12 @@ public class MainActivity extends AppCompatActivity {
     int leftImageNum;
     int[] one2MSelected = {0,0,0,0};
     boolean isOneToMany;
+    int trialNumber =1;
 
     private void randomAndDisplayImg(){
         Random random = new Random();
         randomNumber = random.nextInt(12);
-
+        trialNumber++;
         int[] leftImageIds = {R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4};
         getDrinkList(randomNumber);
         initializeImages(leftImages, leftImageIds);
@@ -68,6 +71,23 @@ public class MainActivity extends AppCompatActivity {
         else{
             displaySelectedImages(1,1);
         }
+
+        if(trialNumber == 5){
+            initiateResultsActivity();
+        }
+    }
+    private void initiateResultsActivity() {
+        //initiate results activity
+
+        Intent i = new Intent(this, ResultActivity.class);
+        Bundle b = new Bundle();
+
+        //Intent myIntent = new Intent(RollingBallPanel.this.getContext().getApplicationContext(), ResultScreen.class);
+        i.putExtras(b);
+
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        this.startActivity(i);
+        //parentActivity.finishActivity(0);
     }
 
     @Override
