@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private void randomAndDisplayImg(){
         Random random = new Random();
         randomNumber = random.nextInt(12);
-        trialNumber++;
         int[] leftImageIds = {R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4};
         getDrinkList(randomNumber);
         initializeImages(leftImages, leftImageIds);
@@ -70,10 +69,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             displaySelectedImages(1,1);
-        }
-
-        if(trialNumber == 5){
-            initiateResultsActivity();
         }
     }
     private void initiateResultsActivity() {
@@ -322,6 +317,11 @@ public class MainActivity extends AppCompatActivity {
                 trueCount++;
                 tv_TrueResult.setText(String.valueOf(trueCount));
                 if(checkMany(rightImageNum)){
+                    if(trialNumber == 5){
+                        initiateResultsActivity();
+                        return;
+                    }
+                    trialNumber++;
                     refresh();
                 }
             }
@@ -344,6 +344,11 @@ public class MainActivity extends AppCompatActivity {
 //                Intent intent = getIntent();
 //                finish();
 //                startActivity(intent);
+                if(trialNumber == 5){
+                    initiateResultsActivity();
+                    return;
+                }
+                trialNumber++;
                 refresh();
             }
 
