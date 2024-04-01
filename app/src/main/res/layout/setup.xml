@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="#698dc8"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#446cae"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Drinking Game - Zulu"
+        android:textColor="@android:color/white"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textSize="20dp"/>
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/applicationInfo"
+                android:layout_width="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="The experiment on user interaction and human-computer interaction entails four distinct tests to evaluate tap and tap, and tap and drag interactions.\nIn the 1:1 interaction test, users match different groups of drinks with corresponding images of numbers within those groups. The M:1 interaction test presents users with various drinks and a single ingredient, tasking them with connecting any drinks containing the specified ingredient. Conversely, in the 1:M interaction test, users connect any ingredients used in a given drink from a selection of different ingredients. The M:M interaction test expands this, requiring users to connect any ingredient to any drink that utilises it from multiple ingredients and drinks.
+                \nThrough tapping and tapping or tapping and dragging, users engage with the interface to establish these connections, aiming to assess efficiency, accuracy, and user experience across different interaction scenarios, thereby informing interface design and optimization strategies for enhanced human-computer interaction."
+                android:textSize="14sp"
+                android:textColor="@android:color/white"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/buttonclickstatus"
+                android:layout_width="282dp"
+                android:layout_height="74dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Press the checkbox if you consent to have your results recorded"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
+
+            <LinearLayout
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"></LinearLayout>
+
+            <CheckBox
+                android:id="@+id/checkbox"
+                android:layout_width="289dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="I Consent"
+                android:textColor="@android:color/white"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+
+            <EditText
+                android:id="@+id/nameEditText"
+                android:layout_width="390dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center"
+                android:inputType="text"
+                android:hint="Enter Your Name Here"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+
+            <EditText
+                android:id="@+id/EditStudentID"
+                android:layout_width="390dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center"
+                android:inputType="number"
+                android:hint="Enter Your Student ID Here"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+
+            <EditText
+                android:id="@+id/EditEmail"
+                android:layout_width="390dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center"
+                android:inputType="textEmailAddress"
+                android:hint="Enter Your Email Here"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+            <Spinner
+                android:id="@+id/interactionSpinner"
+                android:layout_width="358dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Start"
+                android:textSize="14sp"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>
