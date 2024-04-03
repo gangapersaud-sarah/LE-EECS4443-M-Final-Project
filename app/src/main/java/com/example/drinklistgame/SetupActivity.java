@@ -164,17 +164,19 @@ public class SetupActivity extends Activity {
             outputStream = getContentResolver().openOutputStream(uri);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
             //bw.write(text);
-            bw.append("Name,Student ID,Email,Interaction Type\n");
+            bw.append("Name,Student ID,Email,Interaction Type,\n");
             bw.append(name).append(",");
             bw.append(studentId).append(",");
             bw.append(email).append(",");
-            bw.append(interactionType).append("\n");
+            bw.append(interactionType).append(",\n");
+            bw.append("completion time,error rate,cardinality type,trial number,\n");
             bw.flush();
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         Intent i = new Intent(SetupActivity.this, MainActivity.class);
+        i.putExtra("uri",uri.toString());
         //not working
 //        Bundle b = new Bundle();
 //        b.putString("csv_uri", String.valueOf(uri));
