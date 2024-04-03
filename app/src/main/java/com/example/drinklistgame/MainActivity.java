@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.outputUri = savedInstanceState.getString("csv_uri");
+        //wip comment out
+        //this.outputUri = savedInstanceState.getString("csv_uri");
 
         ImageView refresh = findViewById(R.id.refresh);
         tv_TrueResult = findViewById(R.id.tv_TrueResult);
@@ -303,7 +304,8 @@ public class MainActivity extends AppCompatActivity {
     private TrialSummary generateSummary(TrialResult result) {
         double completionTimeSec = result.getCompletionTimeMs() / 1000.0;
         double errorRate = (double) result.getErrorCount() / trialTimes.size() * 100;
-        sendToCsv(new TrialSummary(completionTimeSec, errorRate), 1);
+        //wip
+        //sendToCsv(new TrialSummary(completionTimeSec, errorRate), 1);
         return new TrialSummary(completionTimeSec, errorRate);
     }
     private void sendToCsv(TrialSummary ts, int con){
