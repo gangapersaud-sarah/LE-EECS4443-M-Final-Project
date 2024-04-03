@@ -91,6 +91,10 @@ public class SetupActivity extends Activity {
                 //saveDataToExcel(name, studentId, email, interactionType);
                 saveDataToCsv(name, studentId, email, interactionType);
                 //startActivity(new Intent(SetupActivity.this, MainActivity.class));
+                Intent intent = new Intent(SetupActivity.this, MainActivity.class);
+                intent.putExtra("interactionType", interactionType);
+                startActivity(intent);
+
             }
         });
     }
