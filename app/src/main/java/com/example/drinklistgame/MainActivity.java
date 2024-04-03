@@ -2,6 +2,7 @@ package com.example.drinklistgame;
 
 import static java.security.AccessController.getContext;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -31,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ImageInfo> leftImages = new ArrayList<>();
     private ArrayList<ImageInfo> rightImages = new ArrayList<>();
     private List<Long> trialTimes = new ArrayList<>();
-
+    private List<String[]> trialList;
     private int selectedLeftImageId = -1;
     private int selectedRightImageId = -1;
     private TextView tv_TrueResult, tv_FalseResult, trialCompletion, tv_ErrorRate;
@@ -46,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
     int rightImageNum;
     int leftImageNum;
     int[] one2MSelected = {0,0,0,0};
+    int[] cardinalityCount = {0,0,0,0};
+    int cardType;
     boolean isOneToMany;
     int trialNumber =1;
-    String outputUri;
+     String outputUri;
 
     private void randomAndDisplayImg(){
         Random random = new Random();
@@ -65,17 +71,25 @@ public class MainActivity extends AppCompatActivity {
 
         int m2m = (int)(Math.random()*4+1);
         double swCon = Math.random();
-        if(swCon<=0.25){
+        if(swCon<=0.25 && cardinalityCount[0] <5){
             displaySelectedImages(m2m, m2m);
+            cardinalityCount[0]+=1;
+            cardType = 0;
         }
-        else if(swCon<=0.5){
+        else if(swCon<=0.5 && cardinalityCount[1] <5){
             display12M(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
+            cardinalityCount[1]+=1;
+            cardType = 1;
         }
-        else if(swCon<=0.75){
+        else if(swCon<=0.75 && cardinalityCount[2] <5){
             displayM21(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
+            cardinalityCount[2]+=1;
+            cardType = 2;
         }
         else{
             displaySelectedImages(1,1);
+            cardinalityCount[3]+=1;
+            cardType =3;
         }
     }
     private void initiateResultsActivity() {
@@ -96,7 +110,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //this.outputUri = savedInstanceState.getString("csv_uri");
+        Bundle extras = getIntent().getExtras();
+        trialList =new ArrayList<>();
+        cardType = 0;
+        cardinalityCount = new int[]{0, 0, 0, 0};
+        if (extras != null) {
+            outputUri = extras.getString("uri");
+            //The key argument here must match that used in the other activity
+        }
 
         ImageView refresh = findViewById(R.id.refresh);
         tv_TrueResult = findViewById(R.id.tv_TrueResult);
@@ -303,21 +324,34 @@ public class MainActivity extends AppCompatActivity {
     private TrialSummary generateSummary(TrialResult result) {
         double completionTimeSec = result.getCompletionTimeMs() / 1000.0;
         double errorRate = (double) result.getErrorCount() / trialTimes.size() * 100;
-        //sendToCsv(new TrialSummary(completionTimeSec, errorRate), 1);
+        String[] compTime = new String[4];
+        compTime[0] = String.valueOf(completionTimeSec);
+        compTime[1] = String.valueOf(errorRate);
+        compTime[2] = String.valueOf(cardType);
+        compTime[3] = String.valueOf(trialNumber);
+        trialList.add(compTime);
         return new TrialSummary(completionTimeSec, errorRate);
     }
-    private void sendToCsv(TrialSummary ts, int con){
+    private void sendToCsv(int con){
         if(con == 1) {
             OutputStream outputStream;
             try {
+                InputStream input = getContentResolver().openInputStream(Uri.parse(outputUri));
+                BufferedReader br = new BufferedReader(new InputStreamReader(input));
                 outputStream = getContentResolver().openOutputStream(Uri.parse(outputUri));
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
-            bw.append("completion time:").append(",").append("errorRate\n");
-            bw.append(String.valueOf(ts.getCompletionTimeSec())).append(",");
-            bw.append(String.valueOf(ts.getErrorRate())).append(",\n");
+                for(String[] k:trialList) {
+                    while(br.ready()) {
+                        bw.append(br.readLine()).append("\n");
+                    }
+                    bw.append(k[0]).append(",");
+                    bw.append(k[1]).append(",");
+                    bw.append(k[2]).append(",");
+                    bw.append(k[3]).append(",\n");
+                }
                 bw.flush();
                 bw.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -370,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
 //                finish();
 //                startActivity(intent);
                 if(trialNumber == 5){
+                    sendToCsv(1);
                     initiateResultsActivity();
                     return;
                 }
