@@ -1,8 +1,10 @@
 package com.example.drinklistgame;
 
+
 import static java.security.AccessController.getContext;
 
 import android.content.ContentValues;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,7 +28,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,10 +36,12 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ImageInfo> leftImages = new ArrayList<>();
     private ArrayList<ImageInfo> rightImages = new ArrayList<>();
     private List<Long> trialTimes = new ArrayList<>();
+
     private List<String[]> trialList;
+
     private int selectedLeftImageId = -1;
     private int selectedRightImageId = -1;
-    private TextView tv_TrueResult, tv_FalseResult, trialCompletion, tv_ErrorRate;
+    private TextView tv_TrueResult, tv_FalseResult, trialCompletion, tv_ErrorRate, tv1to1,tv1toM,tvMto1,tvMtoM;
     private int trueCount = 0;
     private int falseCount = 0;
     private long startTime = 0;
@@ -54,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
     int cardType;
     boolean isOneToMany;
     int trialNumber =1;
+
      String outputUri;
+
+    String outputUri;
+    Intent result;
+    String trial_type;
+    Intent intent;
+    String trialLevel;
 
     private void randomAndDisplayImg(){
         Random random = new Random();
@@ -71,22 +81,27 @@ public class MainActivity extends AppCompatActivity {
 
         int m2m = (int)(Math.random()*4+1);
         double swCon = Math.random();
+  
         if(swCon<=0.25 && cardinalityCount[0] <5){
+            trialLevel = "m2m";
             displaySelectedImages(m2m, m2m);
             cardinalityCount[0]+=1;
             cardType = 0;
         }
         else if(swCon<=0.5 && cardinalityCount[1] <5){
+            trialLevel = "12m";
             display12M(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
             cardinalityCount[1]+=1;
             cardType = 1;
         }
         else if(swCon<=0.75 && cardinalityCount[2] <5){
+            trialLevel = "m21";
             displayM21(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
             cardinalityCount[2]+=1;
             cardType = 2;
         }
         else{
+            trialLevel = "121";
             displaySelectedImages(1,1);
             cardinalityCount[3]+=1;
             cardType =3;
@@ -94,15 +109,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initiateResultsActivity() {
         //initiate results activity
-
-        Intent i = new Intent(this, ResultActivity.class);
-        Bundle b = new Bundle();
-
-        //Intent myIntent = new Intent(RollingBallPanel.this.getContext().getApplicationContext(), ResultScreen.class);
-        i.putExtras(b);
-
-        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        this.startActivity(i);
+        result.putExtra("interactionType", trial_type);
+        this.startActivity(result);
         //parentActivity.finishActivity(0);
     }
 
@@ -113,19 +121,22 @@ public class MainActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         trialList =new ArrayList<>();
         cardType = 0;
-        cardinalityCount = new int[]{0, 0, 0, 0};
         if (extras != null) {
             outputUri = extras.getString("uri");
             //The key argument here must match that used in the other activity
         }
 
+        //wip comment out
+        //this.outputUri = savedInstanceState.getString("csv_uri");
         ImageView refresh = findViewById(R.id.refresh);
+        intent = getIntent();
         tv_TrueResult = findViewById(R.id.tv_TrueResult);
         tv_FalseResult = findViewById(R.id.tv_FalseResult);
         trialCompletion = findViewById(R.id.tv_TrialCompletion);
         tv_ErrorRate = findViewById(R.id.tv_ErrorRate);
+        trial_type =  intent.getStringExtra("interactionType");
         isOneToMany = false;
-
+        result = new Intent(MainActivity.this, ResultActivity.class);
         randomAndDisplayImg();
         //old
         //displayImages();
@@ -210,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
         leftImageNum = arrlistofOptions1.size();
         rightImageNum = arrlistofOptions2.size();
         isOneToMany = true;
-
     }
     private void displayM21(int leftElementIndex, int occurrences){
         LinearLayout leftContainer = findViewById(R.id.leftContainer);
@@ -257,10 +267,31 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (isLeft) {
-                        selectedLeftImageId = v.getId();
+                        if(timerRunning) {
+                            selectedLeftImageId = v.getId();
+                            long endTime = System.currentTimeMillis();
+                            trialTimes.add(endTime - startTime);
+                            timerRunning = false;
+                        } else{
+                            selectedLeftImageId = v.getId();
+                            startTime = System.currentTimeMillis();
+                            timerRunning = true;
+                        }
+
                     } else {
-                        selectedRightImageId = v.getId();
+                            if (timerRunning){
+                                selectedRightImageId = v.getId();
+                                long endTime = System.currentTimeMillis();
+                                trialTimes.add(endTime - startTime);
+                                timerRunning = false;
+                            }
+                            else{
+                                selectedRightImageId = v.getId();
+                                timerRunning = true;
+                            }
+
                     }
+                    //trialCount, solves all the errors but it should be trueCount
                     checkSelectedImages();
                 }
             });
@@ -296,12 +327,6 @@ public class MainActivity extends AppCompatActivity {
                                 trialTimes.add(endTime - startTime);
                                 timerRunning = false;
                             }
-
-                            TrialResult result = calculateTrialResult();
-                            TrialSummary summary = generateSummary(result);
-
-                            trialCompletion.setText("Trial completed!\nCompletion Time: " + summary.getCompletionTimeSec() + " seconds");
-                            tv_ErrorRate.setText("Error Rate: " + summary.getErrorRate() + "%");
                             break;
                     }
                     return true;
@@ -321,9 +346,10 @@ public class MainActivity extends AppCompatActivity {
         return new TrialResult(completionTimeMs, falseCount);
     }
 
-    private TrialSummary generateSummary(TrialResult result) {
+    private TrialSummary generateSummary(TrialResult result,String type) {
         double completionTimeSec = result.getCompletionTimeMs() / 1000.0;
         double errorRate = (double) result.getErrorCount() / trialTimes.size() * 100;
+
         String[] compTime = new String[4];
         compTime[0] = String.valueOf(completionTimeSec);
         compTime[1] = String.valueOf(errorRate);
@@ -370,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
     private void checkSelectedImages() {
+        String resultPoplation;
         if(isOneToMany){
             if(selectedRightImageId != -1) {
                 one2MSelected[selectedRightImageId-2] = 1;
@@ -397,7 +424,26 @@ public class MainActivity extends AppCompatActivity {
                 falseCount++;
                 tv_FalseResult.setText(String.valueOf(falseCount));
             }
-            Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum);
+            Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum + ", leftImage = " + leftImageNum);
+            if(rightImageNum <= leftImageNum){
+                if(trueCount == leftImageNum){
+                    TrialResult resultPop = calculateTrialResult();
+                    TrialSummary summary = generateSummary(resultPop,trial_type);
+                    double completionTimeaverage = summary.getCompletionTimeSec() / trialTimes.size();
+                    resultPoplation = "Average - " + summary.getType() + ": " + completionTimeaverage + " seconds," + " Error Rate:" + summary.getErrorRate();
+                    result.putExtra(trialLevel.toString(), resultPoplation);
+                }
+            }
+            else {
+                if(trueCount == rightImageNum) {
+                    TrialResult resultPop = calculateTrialResult();
+                    TrialSummary summary = generateSummary(resultPop,trial_type);
+                    double completionTimeaverage = summary.getCompletionTimeSec() / trialTimes.size();
+                    resultPoplation = "Average - " + summary.getType() + ": " + completionTimeaverage + " seconds," + " Error Rate:" + summary.getErrorRate();
+                    result.putExtra(trialLevel.toString(), resultPoplation);
+                }
+            }
+            Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum + ", trialLevel = " + trialLevel);
             if(trueCount >= rightImageNum && trueCount >= leftImageNum){
                 //old way to reload, performance testing method
 //                Intent intent = getIntent();

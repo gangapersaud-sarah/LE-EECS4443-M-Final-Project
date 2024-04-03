@@ -4,9 +4,12 @@ public class TrialSummary {
     private double completionTimeSec;
     private double errorRate;
 
-    public TrialSummary(double completionTimeSec, double errorRate) {
+    private final String type;
+
+    public TrialSummary(double completionTimeSec, double errorRate, String type) {
         this.completionTimeSec = completionTimeSec;
         this.errorRate = errorRate;
+        this.type = type;
     }
 
     public double getCompletionTimeSec() {
@@ -16,4 +19,6 @@ public class TrialSummary {
     public double getErrorRate() {
         return errorRate;
     }
+
+    public String getType(){return type;}
 }
