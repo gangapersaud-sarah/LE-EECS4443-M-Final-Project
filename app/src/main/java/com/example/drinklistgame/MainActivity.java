@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
      String outputUri;
 
-    String outputUri;
     Intent result;
     String trial_type;
     Intent intent;
@@ -356,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
         compTime[2] = String.valueOf(cardType);
         compTime[3] = String.valueOf(trialNumber);
         trialList.add(compTime);
-        return new TrialSummary(completionTimeSec, errorRate);
+        return new TrialSummary(completionTimeSec, errorRate,type);
     }
     private void sendToCsv(int con){
         if(con == 1) {
