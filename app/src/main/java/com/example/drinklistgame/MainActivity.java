@@ -3,6 +3,7 @@ package com.example.drinklistgame;
 import static java.security.AccessController.getContext;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -14,9 +15,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     int[] one2MSelected = {0,0,0,0};
     boolean isOneToMany;
     int trialNumber =1;
+    String outputUri;
 
     private void randomAndDisplayImg(){
         Random random = new Random();
@@ -89,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.outputUri = savedInstanceState.getString("csv_uri");
 
         ImageView refresh = findViewById(R.id.refresh);
         tv_TrueResult = findViewById(R.id.tv_TrueResult);
@@ -295,7 +303,24 @@ public class MainActivity extends AppCompatActivity {
     private TrialSummary generateSummary(TrialResult result) {
         double completionTimeSec = result.getCompletionTimeMs() / 1000.0;
         double errorRate = (double) result.getErrorCount() / trialTimes.size() * 100;
+        sendToCsv(new TrialSummary(completionTimeSec, errorRate), 1);
         return new TrialSummary(completionTimeSec, errorRate);
+    }
+    private void sendToCsv(TrialSummary ts, int con){
+        if(con == 1) {
+            OutputStream outputStream;
+            try {
+                outputStream = getContentResolver().openOutputStream(Uri.parse(outputUri));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream));
+            bw.append("completion time:").append(",").append("errorRate\n");
+            bw.append(String.valueOf(ts.getCompletionTimeSec())).append(",");
+            bw.append(String.valueOf(ts.getErrorRate())).append(",\n");
+                bw.flush();
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     private boolean checkMany(int count){
         int sum = 0;
