@@ -91,9 +91,9 @@ public class SetupActivity extends Activity {
                 //saveDataToExcel(name, studentId, email, interactionType);
                 saveDataToCsv(name, studentId, email, interactionType);
                 //startActivity(new Intent(SetupActivity.this, MainActivity.class));
-                Intent intent = new Intent(SetupActivity.this, MainActivity.class);
-                intent.putExtra("interactionType", interactionType);
-                startActivity(intent);
+                //Intent intent = new Intent(SetupActivity.this, MainActivity.class);
+                //intent.putExtra("interactionType", interactionType);
+                //startActivity(intent);
 
             }
         });
@@ -181,6 +181,7 @@ public class SetupActivity extends Activity {
 //        Bundle b = new Bundle();
 //        b.putString("csv_uri", String.valueOf(uri));
 //        i.putExtras(b);
+        i.putExtra("interactionType", interactionType);
         startActivity(i);
 
 

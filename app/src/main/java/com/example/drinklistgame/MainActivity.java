@@ -78,32 +78,40 @@ public class MainActivity extends AppCompatActivity {
         //changes
         rightImageNum = leftImageIds.length;
 
-        int m2m = (int)(Math.random()*4+1);
+
         double swCon = Math.random();
-  
-        if(swCon<=0.25 && cardinalityCount[0] <5){
-            trialLevel = "m2m";
-            displaySelectedImages(m2m, m2m);
-            cardinalityCount[0]+=1;
-            cardType = 0;
-        }
-        else if(swCon<=0.5 && cardinalityCount[1] <5){
-            trialLevel = "12m";
-            display12M(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
-            cardinalityCount[1]+=1;
-            cardType = 1;
-        }
-        else if(swCon<=0.75 && cardinalityCount[2] <5){
-            trialLevel = "m21";
-            displayM21(randomIntFromInterval(0,3), randomIntFromInterval(2,4));
-            cardinalityCount[2]+=1;
-            cardType = 2;
-        }
-        else{
-            trialLevel = "121";
-            displaySelectedImages(1,1);
-            cardinalityCount[3]+=1;
-            cardType =3;
+        randomizeTrial(swCon);
+
+    }
+    private void randomizeTrial(double swCon){
+        int m2m = (int)(Math.random()*4+1);
+        while   (true) {
+            if (swCon <= 0.25 && cardinalityCount[0] < 1) {
+                trialLevel = "m2m";
+                displaySelectedImages(m2m, m2m);
+                cardinalityCount[0] += 1;
+                cardType = 0;
+                break;
+            } else if (swCon <= 0.5 && cardinalityCount[1] < 1) {
+                trialLevel = "12m";
+                display12M(randomIntFromInterval(0, 3), randomIntFromInterval(2, 4));
+                cardinalityCount[1] += 1;
+                cardType = 1;
+                break;
+            } else if (swCon <= 0.75 && cardinalityCount[2] < 1) {
+                trialLevel = "m21";
+                displayM21(randomIntFromInterval(0, 3), randomIntFromInterval(2, 4));
+                cardinalityCount[2] += 1;
+                cardType = 2;
+                break;
+            } else if (swCon <= 1 && cardinalityCount[3] < 1) {
+                trialLevel = "121";
+                displaySelectedImages(1, 1);
+                cardinalityCount[3] += 1;
+                cardType = 3;
+                break;
+            }
+            swCon = Math.random();
         }
     }
     private void initiateResultsActivity() {
@@ -390,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
         if(sum == count){
             one2MSelected = new int[]{0, 0, 0, 0};
             isOneToMany = false;
+            sendResults();
             return true;
         }
         return false;
@@ -402,7 +411,8 @@ public class MainActivity extends AppCompatActivity {
                 trueCount++;
                 tv_TrueResult.setText(String.valueOf(trueCount));
                 if(checkMany(rightImageNum)){
-                    if(trialNumber == 5){
+                    if(trialNumber == 4){
+                        sendToCsv(1);
                         initiateResultsActivity();
                         return;
                     }
@@ -426,20 +436,12 @@ public class MainActivity extends AppCompatActivity {
             Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum + ", leftImage = " + leftImageNum);
             if(rightImageNum <= leftImageNum){
                 if(trueCount == leftImageNum){
-                    TrialResult resultPop = calculateTrialResult();
-                    TrialSummary summary = generateSummary(resultPop,trial_type);
-                    double completionTimeaverage = summary.getCompletionTimeSec() / trialTimes.size();
-                    resultPoplation = "Average - " + summary.getType() + ": " + completionTimeaverage + " seconds," + " Error Rate:" + summary.getErrorRate();
-                    result.putExtra(trialLevel.toString(), resultPoplation);
+                    sendResults();
                 }
             }
             else {
                 if(trueCount == rightImageNum) {
-                    TrialResult resultPop = calculateTrialResult();
-                    TrialSummary summary = generateSummary(resultPop,trial_type);
-                    double completionTimeaverage = summary.getCompletionTimeSec() / trialTimes.size();
-                    resultPoplation = "Average - " + summary.getType() + ": " + completionTimeaverage + " seconds," + " Error Rate:" + summary.getErrorRate();
-                    result.putExtra(trialLevel.toString(), resultPoplation);
+                    sendResults();
                 }
             }
             Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum + ", trialLevel = " + trialLevel);
@@ -448,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
 //                Intent intent = getIntent();
 //                finish();
 //                startActivity(intent);
-                if(trialNumber == 5){
+                if(trialNumber == 4){
                     sendToCsv(1);
                     initiateResultsActivity();
                     return;
@@ -460,6 +462,15 @@ public class MainActivity extends AppCompatActivity {
             selectedLeftImageId = -1;
             selectedRightImageId = -1;
         }
+    }
+
+    private void sendResults(){
+        String resultPoplation;
+        TrialResult resultPop = calculateTrialResult();
+        TrialSummary summary = generateSummary(resultPop,trial_type);
+        double completionTimeaverage = summary.getCompletionTimeSec() / trialTimes.size();
+        resultPoplation = "Average - " + summary.getType() + ": " + completionTimeaverage + " seconds," + " Error Rate:" + summary.getErrorRate();
+        result.putExtra(trialLevel.toString(), resultPoplation);
     }
 
     private int dpToPx(int dp) {

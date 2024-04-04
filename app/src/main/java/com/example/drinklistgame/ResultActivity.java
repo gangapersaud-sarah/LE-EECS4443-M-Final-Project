@@ -25,7 +25,7 @@ public class ResultActivity extends Activity {
         tvMtoM.setText(intent.getStringExtra("m2m"));
     }
     public void returnToMain(View view){
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, SetupActivity.class);
        String value =  intent.getStringExtra("interactionType");
         i.putExtra("interactionType", value);
         this.startActivity(i);
