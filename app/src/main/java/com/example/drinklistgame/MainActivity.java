@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
     int trialsPerCardinality = 4;
 
     //number of trials (make sure it is divisible by trialsPerCardinality exactly)
-    int numberOfTrials = 20;
+    // i.e. numberOfTrials/trialsPerCardinality == 4 always
+    int numberOfTrials = 16;
 
 
     private void randomAndDisplayImg(){
