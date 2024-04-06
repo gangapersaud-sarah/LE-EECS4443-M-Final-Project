@@ -64,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
     String trial_type;
     Intent intent;
     String trialLevel;
+    //change accordingly
+    //trials per cardinality (each cardinality will have this many trials)
+    int trialsPerCardinality = 4;
+
+    //number of trials (make sure it is divisible by trialsPerCardinality exactly)
+    int numberOfTrials = 20;
 
     private void randomAndDisplayImg(){
         Random random = new Random();
@@ -86,25 +92,25 @@ public class MainActivity extends AppCompatActivity {
     private void randomizeTrial(double swCon){
         int m2m = (int)(Math.random()*4+1);
         while   (true) {
-            if (swCon <= 0.25 && cardinalityCount[0] < 1) {
+            if (swCon <= 0.25 && cardinalityCount[0] < trialsPerCardinality) {
                 trialLevel = "m2m";
                 displaySelectedImages(m2m, m2m);
                 cardinalityCount[0] += 1;
                 cardType = 0;
                 break;
-            } else if (swCon <= 0.5 && cardinalityCount[1] < 1) {
+            } else if (swCon <= 0.5 && cardinalityCount[1] < trialsPerCardinality) {
                 trialLevel = "12m";
                 display12M(randomIntFromInterval(0, 3), randomIntFromInterval(2, 4));
                 cardinalityCount[1] += 1;
                 cardType = 1;
                 break;
-            } else if (swCon <= 0.75 && cardinalityCount[2] < 1) {
+            } else if (swCon <= 0.75 && cardinalityCount[2] < trialsPerCardinality) {
                 trialLevel = "m21";
                 displayM21(randomIntFromInterval(0, 3), randomIntFromInterval(2, 4));
                 cardinalityCount[2] += 1;
                 cardType = 2;
                 break;
-            } else if (swCon <= 1 && cardinalityCount[3] < 1) {
+            } else if (swCon <= 1 && cardinalityCount[3] < trialsPerCardinality) {
                 trialLevel = "121";
                 displaySelectedImages(1, 1);
                 cardinalityCount[3] += 1;
@@ -411,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
                 trueCount++;
                 tv_TrueResult.setText(String.valueOf(trueCount));
                 if(checkMany(rightImageNum)){
-                    if(trialNumber == 4){
+                    if(trialNumber == numberOfTrials){
                         sendToCsv(1);
                         initiateResultsActivity();
                         return;
@@ -450,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
 //                Intent intent = getIntent();
 //                finish();
 //                startActivity(intent);
-                if(trialNumber == 4){
+                if(trialNumber == numberOfTrials){
                     sendToCsv(1);
                     initiateResultsActivity();
                     return;
