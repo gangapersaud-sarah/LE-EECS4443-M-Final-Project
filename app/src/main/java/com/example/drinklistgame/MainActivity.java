@@ -439,7 +439,6 @@ public class MainActivity extends AppCompatActivity {
                 falseCount++;
                 tv_FalseResult.setText(String.valueOf(falseCount));
             }
-            Log.i("checkimages","trueCount: " + trueCount + ", rightnum = " + rightImageNum + ", leftImage = " + leftImageNum);
             if(rightImageNum <= leftImageNum){
                 if(trueCount == leftImageNum){
                     sendResults();
