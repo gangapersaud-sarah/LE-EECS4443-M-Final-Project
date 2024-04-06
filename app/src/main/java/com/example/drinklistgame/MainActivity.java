@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     //number of trials (make sure it is divisible by trialsPerCardinality exactly)
     int numberOfTrials = 20;
 
+
     private void randomAndDisplayImg(){
         Random random = new Random();
         randomNumber = random.nextInt(12);
